@@ -46,6 +46,26 @@ def verify_env(func):
     return __inner
 
 
+def verify_temp(func):
+    @functools.wraps(func)
+    def __inner(self, request, template_id, *args, **kwargs):
+        unit = db_session.get_session()
+        template = unit.query(models.Template).get(template_id)
+        if template is None:
+            LOG.info(_("Template with id '{0}'"
+                       " not found").format(template_id))
+            raise exc.HTTPNotFound()
+
+        if hasattr(request, 'context'):
+            if template.tenant_id != request.context.tenant:
+                LOG.info(_('User is not authorized to access'
+                           ' this tenant resources'))
+                raise exc.HTTPUnauthorized()
+
+        return func(self, request, template_id, *args, **kwargs)
+    return __inner
+
+
 def verify_session(func):
     @functools.wraps(func)
     def __inner(self, request, *args, **kwargs):

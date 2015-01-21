@@ -52,6 +52,6 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table('environment')
+    op.drop_table('template')
 
     ### end Alembic commands ###

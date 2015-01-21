@@ -107,6 +107,50 @@ class CoreServices(object):
         return data
 
     @staticmethod
+    def post_template_data(template_id, data, path):
+        get_description = temps.TemplateServices.get_template_description
+        save_description = temps.TemplateServices.\
+            save_template_description
+
+        temp_description = get_description(template_id)
+        if temp_description is None:
+            raise exc.HTTPMethodNotAllowed
+        if not 'services' in temp_description:
+            temp_description['tiers'] = []
+
+        if path == '/tiers':
+            if isinstance(data, types.ListType):
+                utils.TraverseHelper.extend(path, data, temp_description)
+            else:
+                utils.TraverseHelper.insert(path, data, temp_description)
+
+        save_description(temp_description)
+
+        return data
+
+    @staticmethod
+    def post_data(environment_id, session_id, data, path):
+        get_description = envs.EnvironmentServices.get_environment_description
+        save_description = envs.EnvironmentServices.\
+            save_environment_description
+
+        env_description = get_description(environment_id, session_id)
+        if env_description is None:
+            raise exc.HTTPMethodNotAllowed
+        if not 'services' in env_description:
+            env_description['services'] = []
+
+        if path == '/services':
+            if isinstance(data, types.ListType):
+                utils.TraverseHelper.extend(path, data, env_description)
+            else:
+                utils.TraverseHelper.insert(path, data, env_description)
+
+        save_description(session_id, env_description)
+
+        return data
+
+    @staticmethod
     def put_data(environment_id, session_id, data, path):
         get_description = envs.EnvironmentServices.get_environment_description
         save_description = envs.EnvironmentServices.\

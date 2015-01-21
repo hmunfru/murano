@@ -23,6 +23,7 @@ from murano.api.v1 import request_statistics
 from murano.api.v1 import services
 from murano.api.v1 import sessions
 from murano.api.v1 import templates
+from murano.api.v1 import tiers
 from murano.common import wsgi
 
 
@@ -116,6 +117,30 @@ class API(wsgi.Router):
                        controller=templates_resource,
                        action='delete',
                        conditions={'method': ['DELETE']})
+
+        tiers_resource = tiers.create_resource()
+        mapper.connect('/templates/{template_id}/tiers',
+                       controller=tiers_resource,
+                       action='get',
+                       conditions={'method': ['GET']}, path='')
+        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
+                       controller=tiers_resource,
+                       action='get',
+                       conditions={'method': ['GET']}, path='')
+
+        mapper.connect('/templates/{template_id}/tiers',
+                       controller=tiers_resource,
+                       action='post',
+                       conditions={'method': ['POST']}, path='')
+
+        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
+                       controller=tiers_resource,
+                       action='put',
+                       conditions={'method': ['PUT']}, path='')
+        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
+                       controller=tiers_resource,
+                       action='delete',
+                       conditions={'method': ['DELETE']}, path='')
 
         deployments_resource = deployments.create_resource()
         mapper.connect('/environments/{environment_id}/deployments',
