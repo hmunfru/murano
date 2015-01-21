@@ -22,6 +22,7 @@ from murano.api.v1 import instance_statistics
 from murano.api.v1 import request_statistics
 from murano.api.v1 import services
 from murano.api.v1 import sessions
+from murano.api.v1 import templates
 from murano.common import wsgi
 
 
@@ -93,6 +94,28 @@ class API(wsgi.Router):
                        controller=environments_resource,
                        action='last',
                        conditions={'method': ['GET']})
+
+        templates_resource = templates.create_resource()
+        mapper.connect('/templates',
+                       controller=templates_resource,
+                       action='index',
+                       conditions={'method': ['GET']})
+        mapper.connect('/templates',
+                       controller=templates_resource,
+                       action='create',
+                       conditions={'method': ['POST']})
+        mapper.connect('/templates/{template_id}',
+                       controller=templates_resource,
+                       action='update',
+                       conditions={'method': ['PUT']})
+        mapper.connect('/templates/{template_id}',
+                       controller=templates_resource,
+                       action='show',
+                       conditions={'method': ['GET']})
+        mapper.connect('/templates/{template_id}',
+                       controller=templates_resource,
+                       action='delete',
+                       conditions={'method': ['DELETE']})
 
         deployments_resource = deployments.create_resource()
         mapper.connect('/environments/{environment_id}/deployments',

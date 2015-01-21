@@ -223,6 +223,50 @@ class MuranoClient(rest_client.RestClient):
 
         return resp, json.loads(body)
 
+    def get_templates_list(self):
+        resp, body = self.get('v1/templates')
+
+        return resp, json.loads(body)
+
+    def create_templates(self, name):
+        post_body = '{"name": "%s"}' % name
+
+        resp, body = self.post('v1/templates', post_body)
+
+        return resp, json.loads(body)
+
+    def delete_templates(self, template_id, timeout=180):
+        def _is_exist():
+            try:
+                resp, _ = self.get('v1/templates/{0}'.format(
+                    template_id))
+            except exceptions.NotFound:
+                return False
+            return resp.status == 200
+
+        temp_deleted = not _is_exist()
+        self.delete('v1/templates/{0}'.format(template_id))
+
+        start_time = time.time()
+        while temp_deleted is not True:
+            if timeout and time.time() - start_time > timeout:
+                raise Exception('Template was not deleted')
+            time.sleep(5)
+            temp_deleted = not _is_exist()
+
+    def update_template(self, template_id):
+        post_body = '{"name": "%s"}' % ("changed-template-name")
+
+        resp, body = self.put('v1/template/{0}'.format(template_id),
+                              post_body)
+
+        return resp, json.loads(body)
+
+    def get_template(self, template_id):
+        resp, body = self.get('v1/templates/{0}'.format(template_id))
+
+        return resp, json.loads(body)
+
 
 class TestCase(test.BaseTestCase):
     @classmethod

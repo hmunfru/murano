@@ -18,6 +18,7 @@ from webob import exc
 
 from murano.common import utils
 from murano.db.services import environments as envs
+from murano.db.services import templates as temps
 
 
 class CoreServices(object):
@@ -59,6 +60,27 @@ class CoreServices(object):
             get_status = CoreServices.get_service_status
             for srv in result:
                 srv['?']['status'] = get_status(environment_id, srv['?']['id'])
+
+        return result
+
+    @staticmethod
+    def get_template_data(template_id, path):
+        get_description = temps.TemplateServices.get_template_description
+
+        temp_description = get_description(template_id)
+
+        if temp_description is None:
+            return None
+
+        if not 'services' in temp_description:
+            return []
+
+        result = utils.TraverseHelper.get(path, temp_description)
+
+        if path == '/services':
+            get_status = CoreServices.get_service_status
+            for srv in result:
+                srv['?']['status'] = get_status(template_id, srv['?']['id'])
 
         return result
 
