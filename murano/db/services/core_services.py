@@ -50,7 +50,7 @@ class CoreServices(object):
 
         if env_description is None:
             return None
-
+        print env_description
         if not 'services' in env_description:
             return []
 
@@ -72,39 +72,12 @@ class CoreServices(object):
         if temp_description is None:
             return None
 
-        if not 'services' in temp_description:
+        if not 'applications' in temp_description:
             return []
 
         result = utils.TraverseHelper.get(path, temp_description)
 
-        if path == '/services':
-            get_status = CoreServices.get_service_status
-            for srv in result:
-                srv['?']['status'] = get_status(template_id, srv['?']['id'])
-
         return result
-
-    @staticmethod
-    def post_data(environment_id, session_id, data, path):
-        get_description = envs.EnvironmentServices.get_environment_description
-        save_description = envs.EnvironmentServices.\
-            save_environment_description
-
-        env_description = get_description(environment_id, session_id)
-        if env_description is None:
-            raise exc.HTTPMethodNotAllowed
-        if not 'services' in env_description:
-            env_description['services'] = []
-
-        if path == '/services':
-            if isinstance(data, types.ListType):
-                utils.TraverseHelper.extend(path, data, env_description)
-            else:
-                utils.TraverseHelper.insert(path, data, env_description)
-
-        save_description(session_id, env_description)
-
-        return data
 
     @staticmethod
     def post_template_data(template_id, data, path):
@@ -115,10 +88,10 @@ class CoreServices(object):
         temp_description = get_description(template_id)
         if temp_description is None:
             raise exc.HTTPMethodNotAllowed
-        if not 'services' in temp_description:
-            temp_description['tiers'] = []
+        if not 'applications' in temp_description:
+            temp_description['applications'] = []
 
-        if path == '/tiers':
+        if path == '/applications':
             if isinstance(data, types.ListType):
                 utils.TraverseHelper.extend(path, data, temp_description)
             else:

@@ -93,7 +93,7 @@ class Controller(object):
 
         #add services to temp
         get_data = core_services.CoreServices.get_template_data
-        temp['services'] = get_data(template_id, '/services')
+        temp['applications'] = get_data(template_id, '/applications')
 
         return temp
 
@@ -129,12 +129,19 @@ class Controller(object):
 
         return template.to_dict()
 
-    @request_statistics.stats_count(API_NAME, 'Template')
+    @request_statistics.stats_count(API_NAME, 'Delete')
     def delete(self, request, template_id):
+
         LOG.debug('Templates:Delete <Id: {0}>'.format(template_id))
         target = {"template_id": template_id}
         policy.check('delete_template', request.context, target)
         temps.TemplateServices.delete(template_id)
+        temps.TemplateServices.remove(template_id)
+
+    @request_statistics.stats_count(API_NAME, 'Create-Environment')
+    def create_environment(self, request, template_id, body):
+        LOG.debug('Templates:Create environment <Id: {0}>'.
+            format(template_id))
 
 
 def create_resource():

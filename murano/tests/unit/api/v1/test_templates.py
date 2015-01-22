@@ -74,7 +74,7 @@ class TestTemplateApi(tb.ControllerTest, tb.MuranoApiTestCase):
         self.assertEqual(200, result.status_code)
         self.assertEqual({'templates': [expected]}, json.loads(result.body))
 
-        expected['services'] = []
+        expected['applications'] = []
 
         # Reset the policy expectation
         self.expect_policy_check('show_template',
@@ -146,7 +146,7 @@ class TestTemplateApi(tb.ControllerTest, tb.MuranoApiTestCase):
         timeutils.utcnow.override_time = fake_now
 
         del expected['description']
-        expected['services'] = []
+        expected['applications'] = []
         expected['name'] = 'renamed_temp'
         expected['updated'] = fake_now
 

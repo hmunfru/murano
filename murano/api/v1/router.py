@@ -15,6 +15,7 @@
 import routes
 
 from murano.api.v1 import actions
+from murano.api.v1 import applications
 from murano.api.v1 import catalog
 from murano.api.v1 import deployments
 from murano.api.v1 import environments
@@ -23,7 +24,6 @@ from murano.api.v1 import request_statistics
 from murano.api.v1 import services
 from murano.api.v1 import sessions
 from murano.api.v1 import templates
-from murano.api.v1 import tiers
 from murano.common import wsgi
 
 
@@ -117,28 +117,31 @@ class API(wsgi.Router):
                        controller=templates_resource,
                        action='delete',
                        conditions={'method': ['DELETE']})
+        mapper.connect('/templates/{template_id}/create-environment',
+                       controller=templates_resource,
+                       action='create-environment',
+                       conditions={'method': ['POST']})
 
-        tiers_resource = tiers.create_resource()
-        mapper.connect('/templates/{template_id}/tiers',
-                       controller=tiers_resource,
-                       action='get',
+        applications_resource = applications.create_resource()
+        mapper.connect('/templates/{template_id}/applications',
+                       controller=applications_resource,
+                       action='index',
                        conditions={'method': ['GET']}, path='')
-        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
-                       controller=tiers_resource,
-                       action='get',
+        mapper.connect('/templates/{template_id}/applications/{path:.*?}',
+                       controller=applications_resource,
+                       action='show',
                        conditions={'method': ['GET']}, path='')
-
-        mapper.connect('/templates/{template_id}/tiers',
-                       controller=tiers_resource,
+        mapper.connect('/templates/{template_id}/applications',
+                       controller=applications_resource,
                        action='post',
                        conditions={'method': ['POST']}, path='')
 
-        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
-                       controller=tiers_resource,
-                       action='put',
-                       conditions={'method': ['PUT']}, path='')
-        mapper.connect('/templates/{template_id}/tiers/{path:.*?}',
-                       controller=tiers_resource,
+        #mapper.connect('/templates/{template_id}/services/{path:.*?}',
+        #               controller=tiers_resource,
+        #               action='put',
+        #               conditions={'method': ['PUT']}, path='')
+        mapper.connect('/templates/{template_id}/applications/{path:.*?}',
+                       controller=applications_resource,
                        action='delete',
                        conditions={'method': ['DELETE']}, path='')
 
